@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useGlobal } from "@/app/layout";
 
 const Page = () => {
-  const token = localStorage.getItem("token");
+  const {token} = useGlobal();
   const [productId, setProductId] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -19,7 +19,6 @@ const Page = () => {
   const { logout } = useGlobal();
   const router = useRouter();
   const searchParams = useSearchParams();
-
   useEffect(() => {
     const id = searchParams.get("id");
     if (id) {
@@ -90,7 +89,7 @@ const Page = () => {
     try {
       const response = productId
         ? await axios.put(
-            `${process.env.NEXT_PUBLIC_API_URL}/products/${productId}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productId}`,
             formData,
             {
               headers: {
@@ -98,7 +97,7 @@ const Page = () => {
               },
             }
           )
-        : await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/products`, data, {
+        : await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/products`, data, {
             headers: {
               "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`,

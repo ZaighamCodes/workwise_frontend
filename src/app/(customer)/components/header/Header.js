@@ -1,14 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useGlobal } from "@/app/layout";
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(true);
-  const { authenticated, setAuthenticated , logout } = useGlobal();
+  const [isOpen, setIsOpen] = useState(false);
+  const { authenticated , logout } = useGlobal();
   const toggleMenu = () => setIsOpen(!isOpen);
-
-  const role = localStorage.getItem("userRole")
   return (
     <div className="parent mx-auto mt-2 top-0">
       <nav className="flex justify-between items-center container bg-[var(--accent)] p-2 rounded-sm shadow-lg relative">
@@ -114,7 +112,8 @@ export default function Header() {
               {!authenticated ? (
                 <Link
                   href="/login"
-                  className="text-white border border-white px-4 py-2 rounded-md hover:bg-white hover:text-black transition"
+                onClick={toggleMenu}
+                className="text-white border border-white px-4 py-2 rounded-md hover:bg-white hover:text-black transition" 
                 >
                   Login
                 </Link>

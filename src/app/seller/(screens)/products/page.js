@@ -1,18 +1,17 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
-import Jwt from "jsonwebtoken";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useGlobal } from "@/app/layout";
 const ProductTable = () => {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const router = useRouter();
   const productsPerPage = 5;
-  const { logout } = useGlobal();
+  const { logout , token } = useGlobal();
+  const router = useRouter();
+
   // Fetch products from API
-  const token = localStorage.getItem("token");
   const fetchProducts = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`, {
@@ -29,10 +28,12 @@ const ProductTable = () => {
       setProducts(data);
     } catch (error) {
       console.error(error);
-      logout();
+      // logout();
     }
   };
 
+
+  
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -51,10 +52,10 @@ const ProductTable = () => {
 
   // for deleting product
   const deleteHandler = async (id) => {
-    const boolean = window.confirm("Are you sure to delete this product ?");
-    if (boolean) {
+    const confirmDelete = window.confirm("Are you sure you want to delete this product?");
+    if (confirmDelete) {
       try {
-        const response = await axios.delete(
+        await axios.delete(
           `${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`,
           {
             headers: {
@@ -63,17 +64,17 @@ const ProductTable = () => {
             },
           }
         );
-
         fetchProducts();
       } catch (err) {
-        console.log(response);
+        console.error("Failed to delete product:", err);
       }
     }
   };
 
   const editHandler = (id) => {
-    router.push(`/seller/addproducts?id=${id}`); // Redirect to the AddProduct page with the product ID
+    router.push(`/seller/addproducts?id=${id}`);
   };
+
   return (
     <div className="container mx-auto px-4">
       <h2 className="text-2xl font-bold mb-4">Product List</h2>
@@ -84,9 +85,9 @@ const ProductTable = () => {
               <th className="px-4 py-2 text-left">Image</th>
               <th className="px-4 py-2 text-left">Name</th>
               <th className="px-4 py-2 text-left">Category</th>
-              <th className="px-4 py-2 text-left">Description</th>
+              <th className="px-4 py-2 text-left hidden md:table-cell">Description</th>
               <th className="px-4 py-2 text-left">Price</th>
-              <th className="px-4 py-2 text-left">Discount Price</th>
+              <th className="px-4 py-2 text-left hidden md:table-cell">Discount Price</th>
               <th className="px-4 py-2 text-center">Actions</th>
             </tr>
           </thead>
@@ -102,9 +103,9 @@ const ProductTable = () => {
                 </td>
                 <td className="px-4 py-2 whitespace-nowrap">{product.name}</td>
                 <td className="px-4 py-2">{product.category}</td>
-                <td className="px-4 py-2">{product.description}</td>
+                <td className="px-4 py-2 hidden md:table-cell">{product.description}</td>
                 <td className="px-4 py-2">{product.price}</td>
-                <td className="px-4 py-2">{product.discount}</td>
+                <td className="px-4 py-2 hidden md:table-cell">{product.discount}</td>
                 <td className="px-4 py-2 text-center">
                   <button
                     className="text-blue-500 hover:text-blue-700 mx-2"

@@ -7,11 +7,11 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function Page() {
-  const { setCartItems, cartItems } = useGlobal();
+  const { setCartItems, cartItems , token} = useGlobal();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalAmount, setTotalAmount] = useState(0);
-  const token = localStorage.getItem("token");
+
   const router = useRouter()
   useEffect(() => {
     async function fetchCartItems() {

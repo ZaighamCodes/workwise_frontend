@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Inter } from "next/font/google";
 import { useRouter } from "next/navigation";
 import md5 from "md5";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 const inter = Inter({ subsets: ["latin"] });
 
 const GlobalContext = createContext();
@@ -16,10 +16,13 @@ const GlobalProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(0);
   const pathname = usePathname();
   const router = useRouter();
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("userRole");
+  const [token, settoken] = useState(null);
+  const [role, setrole] = useState(null);
   useEffect(() => {
-    if (token) {
+    const mytoken = localStorage.getItem("token");
+    settoken(mytoken);
+    setrole(localStorage.getItem("userRole"));
+    if (mytoken) {
       setAuthenticated(true);
     }
   }, [setAuthenticated]);
@@ -53,12 +56,15 @@ const GlobalProvider = ({ children }) => {
     if (authenticated) {
       async function fetchCartItems() {
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/cart`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
           const data = await response.json();
           if (Array.isArray(data)) {
             setCartItems(data.length);
@@ -77,14 +83,10 @@ const GlobalProvider = ({ children }) => {
   // handling routes authentications
   const customerroutes = ["/cart", "/seller"];
   useEffect(() => {
-    console.log("-----------------");
-    console.log("Authenticated:", authenticated);
-    console.log("Current Path:", pathname);
     if (!authenticated && customerroutes.includes(pathname)) {
       router.push("/");
     }
   }, [authenticated, pathname, router]);
-
 
   useEffect(() => {
     const userRole = localStorage.getItem("userRole");
@@ -99,12 +101,6 @@ const GlobalProvider = ({ children }) => {
     }
   }, [pathname, router]);
 
-
-
-
-
-
-
   return (
     <GlobalContext.Provider
       value={{
@@ -114,6 +110,8 @@ const GlobalProvider = ({ children }) => {
         cartItems,
         setCartItems,
         logout,
+        token
+        ,role
       }}
     >
       {children}
@@ -133,7 +131,6 @@ export default function RootLayout({ children }) {
           {!isSellerRoute && <Header />}
           {children}
           <Toaster />
-
         </GlobalProvider>
       </body>
     </html>
