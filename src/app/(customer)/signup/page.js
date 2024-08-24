@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function page() {
+export default function Page() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -44,7 +44,6 @@ export default function page() {
       const data = await response.json();
 
       if (response.ok) {
-        // Redirect to the login page or a success page
         router.push("/login");
       } else {
         setError(data.message || "Something went wrong. Please try again.");
